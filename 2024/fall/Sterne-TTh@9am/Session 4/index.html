@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 4 - HTML Primer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+    header a {
+      color: #fff;
+      text-decoration: none;
+      float: right;
+      margin-right: 20px;
+    }
+    #kanban {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px;
+    }
+    #kanban div {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      width: 18%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #kanban h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    #kanban ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    #kanban li {
+      background-color: #eee;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header>
+    <h1>Kanban Board</h1>
+    <a href="#">Logout</a>
+  </header>
+
+  <!-- Kanban Board Columns -->
+  <section id="kanban">
+    <div>
+      <h2>To Do</h2>
+      <ul>
+        <li>Task 1</li>
+        <li>Task 2</li>
+      </ul>
+    </div>
+    <div>
+      <h2>In Progress</h2>
+      <ul>
+        <li>Task 3</li>
+        <li>Task 4</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Review</h2>
+      <ul>
+        <li>Task 5</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Completed</h2>
+      <ul>
+        <li>Task 6</li>
+      </ul>
+    </div>
+    <div>
+      <h2>On Hold</h2>
+      <ul>
+        <li>Task 7</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>Kanban Board Example - Session 4</p>
+  </footer>
+</body>
+</html>
+

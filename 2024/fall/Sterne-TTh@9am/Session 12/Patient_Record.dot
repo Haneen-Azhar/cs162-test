@@ -1,0 +1,10 @@
+digraph PatientHealthRecord {
+    Patients [label="Patients (PatientID PK, PatientName, DateOfBirth, Address)"];
+    Doctors [label="Doctors (DoctorID PK, DoctorName, Specialty)"];
+    Appointments [label="Appointments (AppointmentID PK, PatientID FK, DoctorID FK, AppointmentDate)"];
+    MedicalRecords [label="MedicalRecords (RecordID PK, PatientID FK, Diagnosis, Prescription, DateOfVisit)"];
+
+    Patients -> Appointments [label="1 to many"];
+    Doctors -> Appointments [label="1 to many"];
+    Patients -> MedicalRecords [label="1 to many"];
+}

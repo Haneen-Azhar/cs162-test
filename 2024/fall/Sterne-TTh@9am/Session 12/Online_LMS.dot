@@ -1,0 +1,12 @@
+digraph OnlineLMS {
+    Courses [label="Courses (CourseID PK, CourseName, Instructor)"];
+    Students [label="Students (StudentID PK, StudentName, Email)"];
+    Enrollments [label="Enrollments (EnrollmentID PK, CourseID FK, StudentID FK)"];
+    Assignments [label="Assignments (AssignmentID PK, CourseID FK, Description, DueDate)"];
+    Submissions [label="Submissions (SubmissionID PK, AssignmentID FK, StudentID FK, SubmissionDate, Grade)"];
+
+    Courses -> Enrollments [label="1 to many"];
+    Students -> Enrollments [label="1 to many"];
+    Assignments -> Submissions [label="1 to many"];
+    Students -> Submissions [label="1 to many"];
+}

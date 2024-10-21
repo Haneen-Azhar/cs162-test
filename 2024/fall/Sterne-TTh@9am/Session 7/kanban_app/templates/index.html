@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haneen's Kanban Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f5f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #4A90E2;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .kanban-board {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+        }
+        .kanban-column {
+            width: 30%;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .kanban-column h3 {
+            text-align: center;
+            color: white;
+            background-color: #4A90E2;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .kanban-item {
+            background-color: #fefefe;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 5px solid #4A90E2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .kanban-item button {
+            background-color: #ff4d4d;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .kanban-item button:hover {
+            background-color: #e60000;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin-top: 20px;
+        }
+        input, button {
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4A90E2;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #357ABD;
+        }
+    </style>
+</head>
+<body>
+    <h1>Haneen's Kanban Board</h1>
+
+    <div class="kanban-board">
+        <div class="kanban-column" id="todo">
+            <h3>Not Started</h3>
+            <div id="todo-items"></div>
+        </div>
+        <div class="kanban-column" id="in-progress">
+            <h3>In Progress</h3>
+            <div id="in-progress-items"></div>
+        </div>
+        <div class="kanban-column" id="completed">
+            <h3>Completed</h3>
+            <div id="completed-items"></div>
+        </div>
+    </div>
+
+    <div>
+        <h3>Add Task</h3>
+        <form id="task-form">
+            <input type="text" id="task-title" placeholder="Task Title" required>
+            <button type="submit">Add Task</button>
+        </form>
+    </div>
+
+    <!-- Include SortableJS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchTasks();
+
+            const form = document.getElementById('task-form');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                addTask();
+            });
+
+            let todoColumn = document.getElementById('todo-items');
+            let inProgressColumn = document.getElementById('in-progress-items');
+            let completedColumn = document.getElementById('completed-items');
+
+            new Sortable(todoColumn, {
+                group: "tasks",
+                animation: 150,
+                onEnd: (evt) => handleDrop(evt, 'To Do')
+            });
+
+            new Sortable(inProgressColumn, {
+                group: "tasks",
+                animation: 150,
+                onEnd: (evt) => handleDrop(evt, 'In Progress')
+            });
+
+            new Sortable(completedColumn, {
+                group: "tasks",
+                animation: 150,
+                onEnd: (evt) => handleDrop(evt, 'Completed')
+            });
+        });
+
+        // Fetch and display tasks
+        function fetchTasks() {
+            fetch('/api/tasks')
+                .then(response => response.json())
+                .then(tasks => {
+                    document.getElementById('todo-items').innerHTML = '';
+                    document.getElementById('in-progress-items').innerHTML = '';
+                    document.getElementById('completed-items').innerHTML = '';
+                    tasks.forEach(task => {
+                        const taskElement = document.createElement('div');
+                        taskElement.classList.add('kanban-item');
+                        taskElement.textContent = task.title;
+
+                        // Add delete button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteTask(task.id);
+                        taskElement.appendChild(deleteButton);
+
+                        taskElement.setAttribute('data-id', task.id);  // Store task ID for updates
+
+                        if (task.status === 'To Do') {
+                            document.getElementById('todo-items').appendChild(taskElement);
+                        } else if (task.status === 'In Progress') {
+                            document.getElementById('in-progress-items').appendChild(taskElement);
+                        } else if (task.status === 'Completed') {
+                            document.getElementById('completed-items').appendChild(taskElement);
+                        }
+                    });
+                });
+        }
+
+        // Add a new task
+        function addTask() {
+            const title = document.getElementById('task-title').value;
+
+            fetch('/api/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetchTasks();  // Refresh the tasks on the board
+                document.getElementById('task-form').reset();  // Reset form
+            });
+        }
+
+        // Handle task drop event and update its status
+        function handleDrop(evt, newStatus) {
+            const taskId = evt.item.getAttribute('data-id');
+
+            // Update task's status on the backend
+            fetch(`/api/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: newStatus }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Task updated:', data);
+            })
+            .catch(error => console.error('Error updating task:', error));
+        }
+
+        // Delete a task
+        function deleteTask(taskId) {
+            fetch(`/api/tasks/${taskId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetchTasks();  // Refresh the tasks on the board
+            })
+            .catch(error => console.error('Error deleting task:', error));
+        }
+    </script>
+</body>
+</html>
